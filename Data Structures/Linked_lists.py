@@ -18,7 +18,7 @@
 """
 def print_list(head):
     current = head
-    while current != None: 
+    while current: 
         print(current.data)
         current = current.next
 
@@ -40,7 +40,7 @@ def print_list(head):
 def GetNode(head, position):
     values = []
     current = head
-    while current != None: 
+    while current: 
         values.append(current.data)
         current = current.next
     values.reverse()
@@ -69,7 +69,7 @@ def Delete(head, position):
     while position != 1: 
         
         # if the to-be-deleted is already None
-        if current.next == None:
+        if not current.next:
             return head
         
         current = current.next
@@ -96,7 +96,7 @@ def Delete(head, position):
 def ReversePrint(head):
     values = []
     current = head
-    while current != None: 
+    while current: 
         values.append(current.data)
         current = current.next
     values.reverse()
@@ -126,10 +126,10 @@ def CompareLists(headA, headB):
     else: 
         currentA = headA
         currentB = headB
-        while currentA != None and currentB != None and currentA.data == currentB.data:
+        while currentA and currentB and currentA.data == currentB.data:
             currentA = currentA.next
             currentB = currentB.next
-        if (currentA == None and currentB != None) or (currentA != None and currentB == None):
+        if (not currentA and currentB) or (currentA and not currentB ):
             return 0
         return 1
     
@@ -152,7 +152,7 @@ def CompareLists(headA, headB):
 def Reverse(head):
     values = []
     current = head
-    while current != None: 
+    while current: 
         values.append(current.data)
         current = current.next
     values.reverse()
@@ -188,13 +188,13 @@ def Reverse(head):
 def Insert(head, data):
     current = head
     new = Node(data)
-    if head == None: 
+    if not head: 
         head = new
         head.next = None
         return head
     
     else: 
-        while current.next != None: 
+        while current.next: 
             current = current.next 
     
         current.next = new
@@ -218,13 +218,13 @@ def Insert(head, data):
 
 def RemoveDuplicates(head):
     current = head
-    if head == None: 
+    if not head: 
         return head 
     
-    while current.next != None:
+    while current.next:
         while current.data == current.next.data: 
             current.next = current.next.next
-            if current.next == None: 
+            if not current.next: 
                 return head
         current = current.next
     return head
@@ -247,7 +247,7 @@ def RemoveDuplicates(head):
 #This is a "method-only" submission.
 #You only need to complete this method.
 def InsertNth(head, data, position):
-    if head == None: 
+    if not head: 
         return Node(data)
     elif position == 0: 
         front = Node(data)
@@ -256,7 +256,7 @@ def InsertNth(head, data, position):
     else: 
         current = head
         while position != 1:
-            if current.next == None: 
+            if not current.next: 
                 return head
             current = current.next
             position -= 1
@@ -265,7 +265,162 @@ def InsertNth(head, data, position):
         current.next.next = temp
         return head
   
+# Merge two sorted linked lists
+"""
+ Merge two linked lists
+ head could be None as well for empty list
+ Node is defined as
+ 
+ class Node(object):
+ 
+   def __init__(self, data=None, next_node=None):
+       self.data = data
+       self.next = next_node
+
+ return back the head of the linked list in the below method.
+"""
+
+def MergeLists(headA, headB):
+    
+    # special cases
+    if not headA: 
+        return headB
+    elif not headB:
+        return headA
+    
+    else: 
+        currentA = headA
+        currentB = headB
+        # point to the head
+        if headA.data < headB.data:
+            head = headA
+            currentA = currentA.next
+        else: 
+            head = headB
+            currentB = currentB.next
+        current = head
+        while currentA and currentB: 
+            if currentA.data > currentB.data:
+                current.next = currentB
+                currentB = currentB.next
+            else:
+                current.next = currentA           
+                currentA = currentA.next
+            current = current.next
+        if currentA: 
+            current.next = currentA
+        elif currentB:
+            current.next = currentB
+        return head
+            
+# Inserting a node into a sorted doubly linked list
+"""
+ Insert a node into a sorted doubly linked list
+ head could be None as well for empty list
+ Node is defined as
+ 
+ class Node(object):
+ 
+   def __init__(self, data=None, next_node=None, prev_node = None):
+       self.data = data
+       self.next = next_node
+       self.prev = prev_node
+
+ return the head node of the updated list 
+"""
+def SortedInsert(head, data):
+    if not head.next: 
+        new = Node(data)
+        head.next = new
+        return head
+    else: 
+        new = Node(data)
+        current = head.next
+        
+        #if new node is the smallest
+        if current.data > data: 
+            new.next = current
+            new.prev = head
+            head.next = new
+            current.prev = new
+            return head 
+        
+        else: 
+        # scan through until we find a node with larger data
+            while current.next and current.next.data < data:    
+                current = current.next
+            if current.next:
+                current.next.prev = new
+                new.next = current.next
+            else: 
+                new.next = None
+            new.prev = current
+            current.next = new
+            
+         # debugging code          
+
+ #       current = head
+  #      print(current.data)
+  #      while current.next != None: 
+   #         print(current.next.data)
+  #          current = current.next
+  #      while current.prev != None: 
+   #         print(current.prev.data)
+  #          current = current.prev
+            return head
   
+  
+#cycle detection
+"""
+Detect a cycle in a linked list. Note that the head pointer may be 'None' if the list is empty.
+
+A Node is defined as: 
+ 
+    class Node(object):
+        def __init__(self, data = None, next_node = None):
+            self.data = data
+            self.next = next_node
+"""
+
+
+def has_cycle(head):
+    current = head
+    # there's 0 or 1 node
+    if not current or not current.next: 
+        return 0
+    
+    # 2 or more nodes
+    else: 
+        values = []
+        current = head.next
+        while current and current.next: 
+            values.append(current.data)
+            if current.next.data in values: 
+                return 1
+        return 0
+        
+    
+
+  
+  
+  
+  
+  
+  
+
+    
+    
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
   
   
   
